@@ -1,5 +1,4 @@
 import os
-import re
 import pandas as pd
 import yt_dlp
 from tqdm import tqdm
