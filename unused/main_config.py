@@ -1,8 +1,8 @@
 import os
-import argparse
 import pandas as pd
 import yt_dlp
 from tqdm import tqdm
+from config import SONG_URL_FILE
 
 
 # url과 file_name을 받아 해당 파일을 download 하고 저장하는 함수
@@ -17,8 +17,8 @@ def download_and_save(url, file_name):
                 "preferredquality": "192",
             }
         ],
-        "quiet": False,
-        "noplaylist": True,
+        "quiet": False,  # 필요시 로그 끄기
+        "noplaylist": True,  # 플레이리스트가 아닌 단일 URL만
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
@@ -33,10 +33,11 @@ def read_csv_and_iterate(file_path: str) -> list:
         try:
             url = row["url"]
             artist = row["artist"].lower().replace(" ", "_")
-            album_number = f"{row['album_number']:02}"
-            track_number = f"{row['track_number']:02}"
+            album_number = f"{row["album_number"]:02}"
+            track_number = f"{row["track_number"]:02}"
             song = row["song"].lower().replace(" ", "_")
             file_name = f"{artist}-{album_number}-{track_number}-{song}"
+            # file_name = re.sub(r'[^\w\-]', '', file_name)
             download_and_save(url, file_name)
 
         except Exception as e:
@@ -50,16 +51,8 @@ def read_csv_and_iterate(file_path: str) -> list:
             f"\n⚠️ {len(failed_rows)}개 다운로드 실패 → 'failed_downloads.csv'에 저장됨"
         )
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Download audio from CSV list of URLs")
-    parser.add_argument(
-        "--song_file",
-        type=str,
-        required=True,
-        help="CSV file name located in './songs_list/' (e.g. blackpink_songs.csv)",
-    )
-    args = parser.parse_args()
 
+if __name__ == "__main__":
     os.makedirs("./output", exist_ok=True)
-    file_path = os.path.join("./songs_list", args.song_file)
+    file_path = f"./songs_list/{SONG_URL_FILE}"
     read_csv_and_iterate(file_path)
