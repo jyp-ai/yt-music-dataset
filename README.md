@@ -5,7 +5,7 @@
 ### 설치
 ```
 git clone https://github.com/jyp-ai/yt-music-dataset.git
-conda create -n yt-music-dataset
+conda create -n yt-music-dataset python=3.12 -y
 conda activate yt-music-dataset
 pip install -r requirements.txt
 ```
